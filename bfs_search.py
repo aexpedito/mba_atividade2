@@ -1,6 +1,7 @@
 import random
 import uuid
 import time
+from queue import Queue
 
 
 class Person(object):
@@ -129,15 +130,28 @@ class FriendNetwork(object):
         Esta função DEVE retornar uma lista com o caminho mais curto (incluindo origem e destino)
         percorrido para encontrar o friend_uid partindo do person_uid
         '''
-
+        queue = Queue()
+        queue.put(self._graph[person_uid]['this'].get_uid())
         path = []
+        path.append(self._graph[person_uid]['this'].get_uid())
+        marked = {}
+        marked[self._graph[person_uid]['this'].get_uid()] = self._graph[person_uid]['this'].get_genre()
+
+        while not queue.empty():
+            #print(queue.get())
+            # foreach person uid
+            for person_uid in self._graph[queue.get()]['friends']:
+                print(person_uid.get_uid())
+                # TODO se vertice ja esta marcado nao poe na fila
+                queue.put(person_uid.get_uid())  # fila
+                marked[person_uid.get_uid()] = person_uid.get_genre()  # marca os ids na fila
 
         return path
 
     def get_separation_degree(self):
 
         total_paths_len = 0
-        for _ in range(100):
+        for _ in range(10):
             person_uid, friend_uid = random.sample([*self._graph.keys()], 2)
             path = self._search(person_uid, friend_uid)
             total_paths_len += len(path) - 1
