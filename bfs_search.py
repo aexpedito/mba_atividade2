@@ -118,7 +118,7 @@ class FriendNetwork(object):
         #                              graph[friend.get_uid()]['friends'])].index(person_props['person_uid'])
         #         del graph[friend.get_uid()]['friends'][person_index]
         #     del graph[person_props['person_uid']]
-        print(graph)
+
         return graph
 
     def get_person_by_uid(self, uid):
