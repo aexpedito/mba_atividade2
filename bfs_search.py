@@ -1,3 +1,4 @@
+import json
 import random
 import uuid
 import time
@@ -132,19 +133,35 @@ class FriendNetwork(object):
         '''
         queue = Queue()
         queue.put(self._graph[person_uid]['this'].get_uid())
+
         path = []
-        path.append(self._graph[person_uid]['this'].get_uid())
+
         marked = {}
-        marked[self._graph[person_uid]['this'].get_uid()] = self._graph[person_uid]['this'].get_genre()
+        marked[self._graph[person_uid]['this'].get_uid()] = ["C", self._graph[person_uid]['this'].get_uid(), 0] #cor[C=cinza,B=branco,P=preto], predecessor, distancia
+
+        for person_uid_all in self._graph.keys():
+            if person_uid != person_uid_all:
+                marked[person_uid_all] = ["B", person_uid_all, -1]
 
         while not queue.empty():
             #print(queue.get())
-            # foreach person uid
-            for person_uid in self._graph[queue.get()]['friends']:
-                print(person_uid.get_uid())
-                # TODO se vertice ja esta marcado nao poe na fila
-                queue.put(person_uid.get_uid())  # fila
-                marked[person_uid.get_uid()] = person_uid.get_genre()  # marca os ids na fila
+            # foreach friend in list
+            current_person = queue.get()
+            for current_person_friend in self._graph[current_person]['friends']:
+                # print(person_uid.get_uid())
+                if marked[current_person_friend.get_uid()][0] == "B":
+                    marked[current_person_friend.get_uid()][0] = "C"
+                    marked[current_person_friend.get_uid()][1] = current_person
+                    marked[current_person_friend.get_uid()][2] = marked[current_person][2] + 1
+                    queue.put(current_person_friend.get_uid())
+
+            marked[current_person][0] = "P"
+        #build path and return
+        path_next = marked[friend_uid]
+        path.append(friend_uid)
+        while path_next[2] != 0:
+            path.append(path_next[1])
+            path_next = marked[path_next[1]]
 
         return path
 
@@ -161,7 +178,7 @@ class FriendNetwork(object):
 
 if __name__ == '__main__':
 
-    friend_network = FriendNetwork(5, 10)
+    friend_network = FriendNetwork(100, 500)
 
     s_time = time.time()
     separation_degree = friend_network.get_separation_degree()
