@@ -137,11 +137,11 @@ class FriendNetwork(object):
         path = []
 
         marked = {}
-        marked[self._graph[person_uid]['this'].get_uid()] = ["C", self._graph[person_uid]['this'].get_uid(), 0] #cor[C=cinza,B=branco,P=preto], predecessor, distancia
+        marked[self._graph[person_uid]['this'].get_uid()] = ["C", self._graph[person_uid]['this'].get_uid(), 0, self._graph[person_uid]['this'].get_genre()] #cor[C=cinza,B=branco,P=preto], predecessor, distancia, genero
 
         for person_uid_all in self._graph.keys():
             if person_uid != person_uid_all:
-                marked[person_uid_all] = ["B", person_uid_all, -1]
+                marked[person_uid_all] = ["B", person_uid_all, -1, self._graph[person_uid_all]['this'].get_genre()]
 
         while not queue.empty():
             #print(queue.get())
@@ -150,10 +150,11 @@ class FriendNetwork(object):
             for current_person_friend in self._graph[current_person]['friends']:
                 # print(person_uid.get_uid())
                 if marked[current_person_friend.get_uid()][0] == "B":
-                    marked[current_person_friend.get_uid()][0] = "C"
-                    marked[current_person_friend.get_uid()][1] = current_person
-                    marked[current_person_friend.get_uid()][2] = marked[current_person][2] + 1
-                    queue.put(current_person_friend.get_uid())
+                    if marked[current_person][3] != marked[current_person_friend.get_uid()][3]:
+                        marked[current_person_friend.get_uid()][0] = "C"
+                        marked[current_person_friend.get_uid()][1] = current_person
+                        marked[current_person_friend.get_uid()][2] = marked[current_person][2] + 1
+                        queue.put(current_person_friend.get_uid())
 
             marked[current_person][0] = "P"
         #build path and return
