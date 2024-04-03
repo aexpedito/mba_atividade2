@@ -137,11 +137,11 @@ class FriendNetwork(object):
         path = []
 
         marked = {}
-        marked[self._graph[person_uid]['this'].get_uid()] = ["C", self._graph[person_uid]['this'].get_uid(), 0, self._graph[person_uid]['this'].get_genre()] #cor[C=cinza,B=branco,P=preto], predecessor, distancia, genero
+        marked[self._graph[person_uid]['this'].get_uid()] = ["C", self._graph[person_uid]['this'].get_uid(), 0] #cor[C=cinza,B=branco,P=preto], predecessor, distancia
 
         for person_uid_all in self._graph.keys():
             if person_uid != person_uid_all:
-                marked[person_uid_all] = ["B", person_uid_all, -1, self._graph[person_uid_all]['this'].get_genre()]
+                marked[person_uid_all] = ["B", person_uid_all, -1]
 
         while not queue.empty():
             #print(queue.get())
@@ -150,11 +150,10 @@ class FriendNetwork(object):
             for current_person_friend in self._graph[current_person]['friends']:
                 # print(person_uid.get_uid())
                 if marked[current_person_friend.get_uid()][0] == "B":
-                    if marked[current_person][3] != marked[current_person_friend.get_uid()][3]:
-                        marked[current_person_friend.get_uid()][0] = "C"
-                        marked[current_person_friend.get_uid()][1] = current_person
-                        marked[current_person_friend.get_uid()][2] = marked[current_person][2] + 1
-                        queue.put(current_person_friend.get_uid())
+                    marked[current_person_friend.get_uid()][0] = "C"
+                    marked[current_person_friend.get_uid()][1] = current_person
+                    marked[current_person_friend.get_uid()][2] = marked[current_person][2] + 1
+                    queue.put(current_person_friend.get_uid())
 
             marked[current_person][0] = "P"
         #build path and return
@@ -169,7 +168,7 @@ class FriendNetwork(object):
     def get_separation_degree(self):
 
         total_paths_len = 0
-        for _ in range(10):
+        for _ in range(100):
             person_uid, friend_uid = random.sample([*self._graph.keys()], 2)
             path = self._search(person_uid, friend_uid)
             total_paths_len += len(path) - 1
@@ -179,7 +178,7 @@ class FriendNetwork(object):
 
 if __name__ == '__main__':
 
-    friend_network = FriendNetwork(100, 500)
+    friend_network = FriendNetwork(10000, 20000000)
 
     s_time = time.time()
     separation_degree = friend_network.get_separation_degree()
