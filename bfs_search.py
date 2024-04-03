@@ -169,7 +169,7 @@ class FriendNetwork(object):
     def get_separation_degree(self):
 
         total_paths_len = 0
-        for _ in range(10):
+        for _ in range(100):
             person_uid, friend_uid = random.sample([*self._graph.keys()], 2)
             path = self._search(person_uid, friend_uid)
             total_paths_len += len(path) - 1
@@ -179,7 +179,7 @@ class FriendNetwork(object):
 
 if __name__ == '__main__':
 
-    friend_network = FriendNetwork(100, 500)
+    friend_network = FriendNetwork(10000, 20000000)
 
     s_time = time.time()
     separation_degree = friend_network.get_separation_degree()
